@@ -100,6 +100,15 @@ pipeline {
                 }
             }
         }
+      stage('Debugging') {
+    steps {
+        script {
+            echo "Current directory: ${pwd()}"
+            echo "Files in the current directory: ${sh(returnStdout: true, script: 'ls -al')}"
+        }
+    }
+}
+
     }
     
     post {
