@@ -12,11 +12,7 @@ pipeline {
     stages {
         stage('Initialize') {
             steps {
-                script {
-                    dir('terraform') {
-                        sh 'terraform init'
-                    }
-                }
+                sh 'terraform init'
             }
         }
         
@@ -27,25 +23,11 @@ pipeline {
             steps {
                 script {
                     def workspace = params.ENVIRONMENT
-                    
-                    dir('terraform') {
-                        def workspaceStatus = sh(returnStatus: true, script: "terraform workspace select ${workspace}")
-                        if (workspaceStatus != 0) {
-                            sh "terraform workspace new ${workspace}"
-                        }
-                    }
+                    sh "terraform workspace new ${workspace} || true"
+                    sh "terraform workspace select ${workspace}"
                 }
             }
         }
-
-              stage('Debugging') {
-    steps {
-        script {
-            echo "Current directory: ${pwd()}"
-            echo "Files in the current directory: ${sh(returnStdout: true, script: 'ls -al')}"
-        }
-    }
-}
         
         stage('Plan') {
             when {
@@ -53,16 +35,11 @@ pipeline {
             }
             steps {
                 script {
-                    def tfvarsFile = params.ENVIRONMENT+'.tfvars'
-                    def workspace = params.ENVIRONMENT
-                    
-                    dir('terraform') {
-                        if (fileExists(tfvarsFile)) {
-                            sh "terraform workspace select ${workspace}"
-                            sh "terraform plan -var-file=${tfvarsFile}"
-                        } else {
-                            error("Given variables file ${tfvarsFile} does not exist.")
-                        }
+                    def tfvarsFile = params.ENVIRONMENT + '.tfvars'
+                    if (fileExists(tfvarsFile)) {
+                        sh "terraform plan -var-file=${tfvarsFile}"
+                    } else {
+                        error("Given variables file ${tfvarsFile} does not exist.")
                     }
                 }
             }
@@ -75,15 +52,10 @@ pipeline {
             steps {
                 script {
                     def tfvarsFile = params.ENVIRONMENT + '.tfvars'
-                    def workspace = params.ENVIRONMENT
-                    
-                    dir('terraform') {
-                        if (fileExists(tfvarsFile)) {
-                            sh "terraform workspace select ${workspace}"
-                            sh "terraform apply -var-file=${tfvarsFile} -auto-approve"
-                        } else {
-                            error("Given variables file ${tfvarsFile} does not exist.")
-                        }
+                    if (fileExists(tfvarsFile)) {
+                        sh "terraform apply -var-file=${tfvarsFile} -auto-approve"
+                    } else {
+                        error("Given variables file ${tfvarsFile} does not exist.")
                     }
                 }
             }
@@ -96,15 +68,10 @@ pipeline {
             steps {
                 script {
                     def tfvarsFile = params.ENVIRONMENT + '.tfvars'
-                    def workspace = params.ENVIRONMENT
-                    
-                    dir('terraform') {
-                        if (fileExists(tfvarsFile)) {
-                            sh "terraform workspace select ${workspace}"
-                            sh "terraform destroy -var-file=${tfvarsFile} -auto-approve"
-                        } else {
-                            error("Given variables file ${tfvarsFile} does not exist.")
-                        }
+                    if (fileExists(tfvarsFile)) {
+                        sh "terraform destroy -var-file=${tfvarsFile} -auto-approve"
+                    } else {
+                        error("Given variables file ${tfvarsFile} does not exist.")
                     }
                 }
             }
@@ -123,9 +90,9 @@ def fileExists(filename) {
 }
 
 def fileExistsInWorkspace(filename) {
-    return new File("${env.WORKSPACE}/terraform/${filename}").exists()
+    return new File("${env.WORKSPACE}/${filename}").exists()
 }
 
 def fileExistsInRoot(filename) {
-    return new File("terraform/${filename}").exists()
+    return new File("${filename}").exists()
 }
