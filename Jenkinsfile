@@ -44,7 +44,7 @@ pipeline {
             }
             steps {
                 script {
-                    def tfvarsFile = params.ENVIRONMENT + '.tfvars'
+                    def tfvarsFile = params.ENVIRONMENT+'.tfvars'
                     def workspace = params.ENVIRONMENT
                     
                     dir('terraform') {
