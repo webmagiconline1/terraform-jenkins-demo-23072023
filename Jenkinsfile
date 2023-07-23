@@ -3,7 +3,7 @@ pipeline {
     
     parameters {
         choice(name: 'ENVIRONMENT', choices: ['dev', 'prod'], description: 'Select the environment: dev or prod')
-        choice(name: 'TFVARS_FILE', choices: ['dev.tfvars', 'prod.tfvars'], description: 'Select the .tfvars file')
+        // choice(name: 'TFVARS_FILE', choices: ['dev.tfvars', 'prod.tfvars'], description: 'Select the .tfvars file')
         booleanParam(name: 'RUN_PLAN', defaultValue: true, description: 'Run Terraform plan')
         booleanParam(name: 'RUN_APPLY', defaultValue: false, description: 'Run Terraform apply')
         booleanParam(name: 'RUN_DESTROY', defaultValue: false, description: 'Run Terraform destroy')
