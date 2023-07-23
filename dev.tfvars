@@ -8,6 +8,7 @@ subnetwork = "projects/jovial-totality-390103/regions/us-central1/subnetworks/de
 num_instances = 1
 // nat_ip = "x.x.x.x" # Replace with the public IP address or remove this line if not needed
 network_tier = "STANDARD"
+hostname = webserver-dev
 service_account = {
   email = "terraform-sa@jovial-totality-390103.iam.gserviceaccount.com"
   scopes = [
